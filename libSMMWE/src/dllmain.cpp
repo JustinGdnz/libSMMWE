@@ -7,12 +7,6 @@
 
 DWORD WINAPI ModThread(HMODULE hModule)
 {
-    // Create Console
-    AllocConsole();
-    FILE* f;
-    freopen_s(&f, "CONOUT$", "w", stdout);
-    freopen_s(&f, "CONIN$", "r", stdin);
-
     // Registar algunas funciones provenientes del juego base
     SMMWE::RegisterMethods(mem::gameBase + 0xABDA40, mem::gameBase + 0xEEE090, mem::gameBase + 0xF06CE0, mem::gameBase + 0xEF1530, mem::gameBase + 0x1460);
 
@@ -22,10 +16,6 @@ DWORD WINAPI ModThread(HMODULE hModule)
     // Mantener activo el proceso hasta que se cargue la textura por completo
     while (SMMWE::running) {}
     SMMWE::RejectHook();
-
-    // Close Console
-    fclose(f);
-    FreeConsole();
 
     // Exit
     FreeLibraryAndExitThread(hModule, 0);
