@@ -5,17 +5,96 @@
 #include <Windows.h>
 #include <atomic>
 
+// Shortcut para la libreria filesystem
+namespace filesystem = std::filesystem;
+
 // Rutas necesarias para despues
-std::filesystem::path LocalAppData = mem::GetEnv("LOCALAPPDATA");
-std::filesystem::path GamePath = LocalAppData / "SMM_WE";
+filesystem::path LocalAppData = mem::GetEnv("LOCALAPPDATA");
+filesystem::path GamePath = LocalAppData / "SMM_WE";
 
 // Codigo inyectado
 void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 {
+	// Evitar que se ejecute 2 o mas veces
 	Sleep(20);
 	if (running)
 	{
-		if (std::filesystem::exists(GamePath / "Textures"))
+		// Comprobar si existe la carpeta de Sprites
+		if (filesystem::exists(GamePath / "Textures\\Default\\Sprites"))
+		{
+			// Loop entre todos los elementos de la carpeta y subcarpetas
+			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Sprites" })
+			{
+				// Obtener la informacion del elemento
+				filesystem::path entry_path = dir_entry.path();
+				filesystem::path entry_file = dir_entry.path().filename();
+				filesystem::path entry_extn = dir_entry.path().extension();
+
+				// "Safe Guard", en caso de que algo salga mal
+				if (!dir_entry.is_regular_file()) continue;
+				if (!(entry_extn.compare(".png") == 0)) continue;
+
+				// Strings del nombre del archivo
+				std::string fname = entry_file.string();
+				std::string Strip = fname;
+
+				// Obtener el nombre absoluto del sprite
+				auto str_pos = fname.find_first_of("_");
+				if (str_pos == std::string::npos) continue;
+				fname.erase(str_pos);
+
+				// Obtener la cantidad de frames del nombre del archivo
+				str_pos = Strip.find_last_of("_");
+				if (str_pos == std::string::npos) continue;
+				Strip.erase(0, str_pos + 6);
+
+				// Eliminar el residuo
+				str_pos = Strip.find_last_of(".");
+				if (str_pos == std::string::npos) continue;
+				Strip.erase(str_pos);
+
+				// Obtener el index del sprite y la cantidad te frames en valor numerico
+				double sprite_index = GetSingleton().GetAssetIndex(_pSelf, _pOther, fname.c_str());
+				double imgnumb = std::stoi(Strip);
+
+				// Si el index del sprite no es invalido se reemplazara el sprite
+				if (sprite_index != -1)
+				{
+					GetSingleton().SpriteReplace(_pSelf, _pOther, sprite_index, entry_path.string().c_str(), imgnumb, 0, 0, GetSingleton().GetSpriteXOrig(_pSelf, _pOther, sprite_index), GetSingleton().GetSpriteYOrig(_pSelf, _pOther, sprite_index));
+				}
+			}
+		}
+
+		// Comprobar si existe la carpeta de Backgrounds
+		if (filesystem::exists(GamePath / "Textures\\Default\\Backgrounds"))
+		{
+			// Loop entre todos los elementos de la carpeta y subcarpetas
+			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Backgrounds" })
+			{
+				// Obtener la informacion del elemento
+				filesystem::path entry_path = dir_entry.path();
+				filesystem::path entry_stem = dir_entry.path().stem();
+				filesystem::path entry_extn = dir_entry.path().extension();
+
+				// "Safe Guard", en caso de que algo salga mal
+				if (!dir_entry.is_regular_file()) continue;
+				if (!(entry_extn.compare(".png") == 0)) continue;
+
+				// Nombre del archivo
+				std::string fname = entry_stem.string();
+
+				// Obtener el index del background
+				double background_index = GetSingleton().GetAssetIndex(_pSelf, _pOther, fname.c_str());
+
+				// Si el index del background no es invalido se reemplazara el background
+				if (background_index != -1)
+				{
+					GetSingleton().BackgroundReplace(_pSelf, _pOther, background_index, entry_path.string().c_str(), 0, 0);
+				}
+			}
+		}
+
+		/*if (std::filesystem::exists(GamePath / "Textures"))
 		{
 			for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Sprites" })
 			{
@@ -50,7 +129,7 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 					}
 				}
 			}
-		}
+		}*/
 		running = false;
 	}
 	oriPersistentStep(_pSelf, _pOther);
