@@ -39,7 +39,7 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 				std::string Strip = fname;
 
 				// Obtener el nombre absoluto del sprite
-				auto str_pos = fname.find_first_of("_");
+				auto str_pos = fname.find_last_of("_");
 				if (str_pos == std::string::npos) continue;
 				fname.erase(str_pos);
 
@@ -93,45 +93,10 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 				}
 			}
 		}
-
-		/*if (std::filesystem::exists(GamePath / "Textures"))
-		{
-			for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Sprites" })
-			{
-				if (dir_entry.is_regular_file() && dir_entry.path().extension().string().compare(".png") == 0)
-				{
-					std::string fname = dir_entry.path().filename().string();
-					std::string Strip = fname;
-					fname.erase(fname.find_last_of("_"));
-					Strip.erase(0, Strip.find_last_of("_") + 6);
-					Strip.erase(Strip.find_last_of("."));
-
-					double sprite_index = GetSingleton().GetAssetIndex(_pSelf, _pOther, fname.c_str());
-
-					if (sprite_index != -1)
-					{
-						GetSingleton().SpriteReplace(_pSelf, _pOther, sprite_index, dir_entry.path().string().c_str(), std::stoi(Strip), 0, 0, GetSingleton().GetSpriteXOrig(_pSelf, _pOther, sprite_index), GetSingleton().GetSpriteYOrig(_pSelf, _pOther, sprite_index));
-					}
-				}
-			}
-
-			for (auto const& dir_entry : std::filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Backgrounds" })
-			{
-				if (dir_entry.is_regular_file())
-				{
-					std::string fname = dir_entry.path().stem().string();
-
-					double sprite_index = GetSingleton().GetAssetIndex(_pSelf, _pOther, fname.c_str());
-
-					if (sprite_index != -1)
-					{
-						GetSingleton().BackgroundReplace(_pSelf, _pOther, sprite_index, dir_entry.path().string().c_str(), 0, 0);
-					}
-				}
-			}
-		}*/
 		running = false;
 	}
+
+	// Ejecutar el codigo original
 	oriPersistentStep(_pSelf, _pOther);
 }
 
