@@ -5,17 +5,15 @@
 #include "Memory/Memory.h"
 #include "libSMMWE.h"
 
-
 DWORD WINAPI ModThread(HMODULE hModule)
 {
-
-    // Register some SMM:WE functions
+    // Registar algunas funciones provenientes del juego base
     SMMWE::RegisterMethods(mem::gameBase + 0xABDA40, mem::gameBase + 0xEEE090, mem::gameBase + 0xF06CE0, mem::gameBase + 0xEF1530, mem::gameBase + 0x1460);
 
-    // Hook into SMM:WE
+    // "Robar" memoria de SMM:WE para "inyectar" nuevo codigo
     SMMWE::Hook();
 
-    // Keep running until the game fully loaded the texture
+    // Mantener activo el proceso hasta que se cargue la textura por completo
     while (SMMWE::running) {}
     SMMWE::RejectHook();
 

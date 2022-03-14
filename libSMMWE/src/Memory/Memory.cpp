@@ -1,6 +1,8 @@
 #include "Memory.h"
 #include <iostream>
 
+// Cosas mayormente tecnicas, sacadas de GH :pray:
+
 bool mem::Detour32(BYTE* src, BYTE* dst, const uintptr_t len)
 {
 	if (len < 5) return false;

@@ -5,9 +5,11 @@
 #include <Windows.h>
 #include <atomic>
 
+// Rutas necesarias para despues
 std::filesystem::path LocalAppData = mem::GetEnv("LOCALAPPDATA");
 std::filesystem::path GamePath = LocalAppData / "SMM_WE";
 
+// Codigo inyectado
 void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 {
 	Sleep(20);

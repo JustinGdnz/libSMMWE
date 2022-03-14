@@ -3,6 +3,7 @@
 #include <iostream>
 #include <atomic>
 
+// Singleton para modificar la mayoria de cosas necesarias de SMM:WE
 class SMMWE
 {
 private:

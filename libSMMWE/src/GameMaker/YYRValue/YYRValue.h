@@ -1,5 +1,6 @@
 #pragma once
 
+/// ...Mas cosas relacionadas con GMS
 struct YYRValue
 {
 	double Value;
