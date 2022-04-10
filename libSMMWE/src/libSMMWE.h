@@ -28,6 +28,9 @@ private:
 	YYRValue GetAssetIndex(void* _pSelf, void* _pOther, const char* name);
 	YYRValue GetSpriteXOrig(void* _pSelf, void* _pOther, YYRValue ind);
 	YYRValue GetSpriteYOrig(void* _pSelf, void* _pOther, YYRValue ind);
+	YYRValue AsyncBegin(void* _pSelf, void* _pOther, const char* groupname);
+	YYRValue AsyncOption(void* _pSelf, void* _pOther, const char* optionname, const char* optionvalue);
+	YYRValue AsyncEnd(void* _pSelf, void* _pOther);
 private:
 	SMMWE() = default;
 };

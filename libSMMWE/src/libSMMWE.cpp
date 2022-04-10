@@ -1,6 +1,7 @@
 #include "libSMMWE.h"
 #include <iostream>
 #include <filesystem>
+#include <fstream>
 #include "Memory/Memory.h"
 #include <Windows.h>
 #include <atomic>
@@ -11,6 +12,7 @@ namespace filesystem = std::filesystem;
 // Rutas necesarias para despues
 filesystem::path LocalAppData = mem::GetEnv("LOCALAPPDATA");
 filesystem::path GamePath = LocalAppData / "SMM_WE";
+filesystem::path TLPath = LocalAppData / "SMMWE_Texture_Loader";
 
 // Codigo inyectado
 void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
@@ -19,11 +21,31 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 	Sleep(20);
 	if (running)
 	{
+		filesystem::path texture_path;
+
+		// Check cache folder
+		if (filesystem::exists(TLPath / "Cache"))
+		{
+			// Get temp file path
+			filesystem::path temp_path = TLPath / "Cache" / "temp";
+			std::ifstream temp_file;
+			temp_file.open(temp_path);
+
+			if (temp_file.is_open());
+			{
+				temp_file >> texture_path;
+			}
+		}
+
+		// Break sandbox
+		GetSingleton().AsyncBegin(_pSelf, _pOther, "dummy");
+		GetSingleton().AsyncOption(_pSelf, _pOther, "temprloc", texture_path.string().c_str());
+
 		// Comprobar si existe la carpeta de Sprites
-		if (filesystem::exists(GamePath / "Textures\\Default\\Sprites"))
+		if (filesystem::exists(texture_path / "Sprites"))
 		{
 			// Loop entre todos los elementos de la carpeta y subcarpetas
-			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Sprites" })
+			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ texture_path / "Sprites" })
 			{
 				// Obtener la informacion del elemento
 				filesystem::path entry_path = dir_entry.path();
@@ -66,10 +88,10 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 		}
 
 		// Comprobar si existe la carpeta de Backgrounds
-		if (filesystem::exists(GamePath / "Textures\\Default\\Backgrounds"))
+		if (filesystem::exists(texture_path / "Backgrounds"))
 		{
 			// Loop entre todos los elementos de la carpeta y subcarpetas
-			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ GamePath / "Textures\\Default\\Backgrounds" })
+			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ texture_path / "Backgrounds" })
 			{
 				// Obtener la informacion del elemento
 				filesystem::path entry_path = dir_entry.path();
@@ -93,6 +115,9 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 				}
 			}
 		}
+
+		// Restore sandbox
+		GetSingleton().AsyncEnd(_pSelf, _pOther);
 		running = false;
 	}
 
@@ -182,5 +207,43 @@ YYRValue SMMWE::GetSpriteYOrig(void* _pSelf, void* _pOther, YYRValue ind)
 	YYRValue* args[] = { &ind };
 
 	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 1, 791, args);
+	return result;
+}
+
+YYRValue SMMWE::AsyncBegin(void* _pSelf, void* _pOther, const char* groupname)
+{
+	YYRValue result;
+	YYRValue string;
+	YYRValue* args[] = { &string };
+
+	AllocString(&string, groupname);
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 1, 1744, args);
+	DeAllocString(&string);
+
+	return result;
+}
+
+YYRValue SMMWE::AsyncOption(void* _pSelf, void* _pOther, const char* optionname, const char* optionvalue)
+{
+	YYRValue result;
+	YYRValue name;
+	YYRValue value;
+	YYRValue* args[] = { &name, &value };
+
+	AllocString(&name, optionname);
+	AllocString(&value, optionvalue);
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 2, 1746, args);
+	DeAllocString(&name);
+	DeAllocString(&value);
+
+	return result;
+}
+
+YYRValue SMMWE::AsyncEnd(void* _pSelf, void* _pOther)
+{
+	YYRValue result;
+
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 0, 1746, NULL);
+
 	return result;
 }
