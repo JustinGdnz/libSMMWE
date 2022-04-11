@@ -37,9 +37,14 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 			}
 		}
 
-		// Break sandbox
-		GetSingleton().AsyncBegin(_pSelf, _pOther, "dummy");
-		GetSingleton().AsyncOption(_pSelf, _pOther, "temprloc", texture_path.string().c_str());
+		if (!GetSingleton().VariableGlobalExists(_pSelf, _pOther, "tlrule_sandboxbroke"))
+		{
+			GetSingleton().VariableGlobalSet(_pSelf, _pOther, "tlrule_sandboxbroke", 1.0);
+
+			// Break sandbox
+			GetSingleton().AsyncBegin(_pSelf, _pOther, "dummy");
+			GetSingleton().AsyncOption(_pSelf, _pOther, "temprloc", TLPath.string().c_str());
+		}
 
 		// Comprobar si existe la carpeta de Sprites
 		if (filesystem::exists(texture_path / "Sprites"))
@@ -115,9 +120,6 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 				}
 			}
 		}
-
-		// Restore sandbox
-		GetSingleton().AsyncEnd(_pSelf, _pOther);
 		running = false;
 	}
 
