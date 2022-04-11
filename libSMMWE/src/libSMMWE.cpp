@@ -243,7 +243,46 @@ YYRValue SMMWE::AsyncEnd(void* _pSelf, void* _pOther)
 {
 	YYRValue result;
 
-	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 0, 1746, NULL);
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 0, 1745, NULL);
+
+	return result;
+}
+
+YYRValue SMMWE::VariableGlobalExists(void* _pSelf, void* _pOther, const char* name)
+{
+	YYRValue result;
+	YYRValue string;
+	YYRValue* args[] = { &string };
+
+	AllocString(&string, name);
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 1, 1285, args);
+	DeAllocString(&string);
+
+	return result;
+}
+
+YYRValue SMMWE::VariableGlobalGet(void* _pSelf, void* _pOther, const char* name)
+{
+	YYRValue result;
+	YYRValue string;
+	YYRValue* args[] = { &string };
+
+	AllocString(&string, name);
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 1, 1286, args);
+	DeAllocString(&string);
+
+	return result;
+}
+
+YYRValue SMMWE::VariableGlobalSet(void* _pSelf, void* _pOther, const char* name, YYRValue value)
+{
+	YYRValue result;
+	YYRValue string;
+	YYRValue* args[] = { &string, &value };
+
+	AllocString(&string, name);
+	YYGML_CallLegacyFunction(_pSelf, _pOther, &result, 2, 1287, args);
+	DeAllocString(&string);
 
 	return result;
 }

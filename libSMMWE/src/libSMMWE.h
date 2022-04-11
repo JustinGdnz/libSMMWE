@@ -31,6 +31,9 @@ private:
 	YYRValue AsyncBegin(void* _pSelf, void* _pOther, const char* groupname);
 	YYRValue AsyncOption(void* _pSelf, void* _pOther, const char* optionname, const char* optionvalue);
 	YYRValue AsyncEnd(void* _pSelf, void* _pOther);
+	YYRValue VariableGlobalExists(void* _pSelf, void* _pOther, const char* name);
+	YYRValue VariableGlobalGet(void* _pSelf, void* _pOther, const char* name);
+	YYRValue VariableGlobalSet(void* _pSelf, void* _pOther, const char* name, YYRValue value);
 private:
 	SMMWE() = default;
 };
