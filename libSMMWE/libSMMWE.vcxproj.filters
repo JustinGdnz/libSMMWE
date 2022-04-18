@@ -24,9 +24,6 @@
     <ClCompile Include="src\Memory\Memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameMaker\YYCGame\YYCGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Memory\Memory.h">
@@ -39,9 +36,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GameMaker\GameMaker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameMaker\YYCGame\YYCGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

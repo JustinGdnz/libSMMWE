@@ -1,6 +1,6 @@
 #pragma once
 
-/// ...Mas cosas relacionadas con GMS
+// GML-like variable type
 struct YYRValue
 {
 	double Value;

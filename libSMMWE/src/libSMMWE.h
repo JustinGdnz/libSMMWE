@@ -17,7 +17,7 @@ public:
 public:
 	SMMWE(const SMMWE&) = delete;
 	static void __cdecl hkdPersistentStep(void* _pSelf, void* _pOther);
-	static SMMWE& GetSingleton();
+	static SMMWE& GetInstance();
 	static void RegisterMethods(uintptr_t arg1, uintptr_t arg2, uintptr_t arg3, uintptr_t arg4, uintptr_t arg5);
 
 	static void Hook();

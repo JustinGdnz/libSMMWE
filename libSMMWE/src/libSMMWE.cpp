@@ -1,22 +1,89 @@
 #include "libSMMWE.h"
+#include "Memory/Memory.h"
+
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include "Memory/Memory.h"
 #include <Windows.h>
 #include <atomic>
 
-// Shortcut para la libreria filesystem
+// Namespaces
 namespace filesystem = std::filesystem;
 
-// Rutas necesarias para despues
-filesystem::path LocalAppData = mem::GetEnv("LOCALAPPDATA");
-filesystem::path GamePath = LocalAppData / "SMM_WE";
-filesystem::path TLPath = LocalAppData / "SMMWE_Texture_Loader";
+// Statics
+static filesystem::path LocalAppData = mem::GetEnv("LOCALAPPDATA");			// %localappdata%	
+static filesystem::path TLPath = LocalAppData / "SMMWE_Texture_Loader";		// directorio local de TL
 
-// Codigo inyectado
+// Script prinicipal
 void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 {
+	if (running)
+	{
+		filesystem::path texdir;
+
+		if (filesystem::exists(TLPath / "Cache/temp"))
+		{
+			std::ifstream temporal_file;
+			temporal_file.open(TLPath / "Cache/temp");
+			if (temporal_file.is_open())
+			{
+				temporal_file >> texdir;
+			}
+		}
+
+		// Return (exit) en caso de algun error
+		if (texdir.empty() || !filesystem::exists(texdir))
+		{
+			running = false;
+			oriPersistentStep(_pSelf, _pOther);
+			return;
+		}
+
+		// Crear una regla dentro del juego en caso de que no exista
+		if (!GetInstance().VariableGlobalExists(_pSelf, _pOther, "tlrule_no_sandbox"))
+		{
+			// Crear regla "tlrule_no_sandbox"
+			GetInstance().VariableGlobalSet(_pSelf, _pOther, "tlrule_no_sandbox", 1.0);
+
+			// Romper el sandbox
+			GetInstance().AsyncBegin(_pSelf, _pOther, "dummy");
+			GetInstance().AsyncOption(_pSelf, _pOther, "temprloc", TLPath.string().c_str());
+		}
+
+		// Comprobar si existe la carpeta de Backgrounds
+		if (filesystem::exists(texdir / "Backgrounds"))
+		{
+			// Loop entre todos los elementos de la carpeta y subcarpetas
+			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ texdir / "Backgrounds" })
+			{
+				// Obtener la informacion del elemento
+				filesystem::path entry_path = dir_entry.path();
+				filesystem::path entry_stem = dir_entry.path().stem();
+				filesystem::path entry_extn = dir_entry.path().extension();
+
+				// Saltar al siguiente archivo en caso de que no sea un png valido
+				if (!dir_entry.is_regular_file()) continue;
+				if (!(entry_extn.compare(".png") == 0)) continue;
+
+				// Nombre del archivo
+				std::string fname = entry_stem.string();
+
+				// Obtener el index del background
+				double background_index = GetInstance().GetAssetIndex(_pSelf, _pOther, fname.c_str());
+
+				// Si el index del background no es invalido se reemplazara el background
+				if (background_index != -1)
+				{
+					GetInstance().BackgroundReplace(_pSelf, _pOther, background_index, entry_path.string().c_str(), 0, 0);
+				}
+			}
+		}
+		running = false;
+	}
+
+	oriPersistentStep(_pSelf, _pOther);
+}
+	/*
 	// Evitar que se ejecute 2 o mas veces
 	Sleep(20);
 	if (running)
@@ -126,8 +193,9 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 	// Ejecutar el codigo original
 	oriPersistentStep(_pSelf, _pOther);
 }
+*/
 
-SMMWE& SMMWE::GetSingleton()
+SMMWE& SMMWE::GetInstance()
 {
 	static SMMWE instance;
 	return instance;

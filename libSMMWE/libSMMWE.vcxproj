@@ -89,14 +89,12 @@
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\libSMMWE.cpp" />
     <ClCompile Include="src\Memory\Memory.cpp" />
-    <ClCompile Include="src\GameMaker\YYCGame\YYCGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameMaker\GameMaker.h" />
     <ClInclude Include="src\GameMaker\YYRValue\YYRValue.h" />
     <ClInclude Include="src\libSMMWE.h" />
     <ClInclude Include="src\Memory\Memory.h" />
-    <ClInclude Include="src\GameMaker\YYCGame\YYCGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
