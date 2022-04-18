@@ -1,9 +1,8 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-#include <Windows.h>
-#include <iostream>
-#include "Memory/Memory.h"
-#include "libSMMWE.h"
+#include "stdafx.h"
+#include "libSMMWE/Memory/Memory.h"
+#include "libSMMWE/libSMMWE.h"
 
 DWORD WINAPI ModThread(HMODULE hModule)
 {

@@ -1,11 +1,6 @@
+#include "stdafx.h"
 #include "libSMMWE.h"
 #include "Memory/Memory.h"
-
-#include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <Windows.h>
-#include <atomic>
 
 // Namespaces
 namespace filesystem = std::filesystem;

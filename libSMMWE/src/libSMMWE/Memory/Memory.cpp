@@ -1,5 +1,5 @@
+#include "stdafx.h"
 #include "Memory.h"
-#include <iostream>
 
 // Cosas mayormente tecnicas, sacadas de GH :pray:
 

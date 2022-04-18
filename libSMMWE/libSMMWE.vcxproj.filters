@@ -18,24 +18,30 @@
     <ClCompile Include="src\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\libSMMWE.cpp">
+    <ClCompile Include="src\libSMMWE\libSMMWE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Memory\Memory.cpp">
+    <ClCompile Include="src\libSMMWE\Memory\Memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Memory\Memory.h">
+    <ClInclude Include="src\libSMMWE\Memory\Memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameMaker\YYRValue\YYRValue.h">
+    <ClInclude Include="src\libSMMWE\GameMaker\YYRValue\YYRValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\libSMMWE.h">
+    <ClInclude Include="src\libSMMWE\libSMMWE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameMaker\GameMaker.h">
+    <ClInclude Include="src\libSMMWE\GameMaker\GameMaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
