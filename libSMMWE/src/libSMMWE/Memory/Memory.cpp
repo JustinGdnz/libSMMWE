@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Memory.h"
 
 // Cosas mayormente tecnicas, sacadas de GH :pray:

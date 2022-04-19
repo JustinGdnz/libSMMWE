@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "libSMMWE.h"
 #include "Memory/Memory.h"
 
