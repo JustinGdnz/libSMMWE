@@ -22,7 +22,10 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 			temporal_file.open(TLPath / "Cache/temp");
 			if (temporal_file.is_open())
 			{
-				temporal_file >> texdir;
+				//temporal_file >> texdir;
+				std::string line;
+				std::getline(temporal_file, line);
+				texdir = line;
 			}
 		}
 
@@ -43,6 +46,51 @@ void __cdecl SMMWE::hkdPersistentStep(void* _pSelf, void* _pOther)
 			// Romper el sandbox
 			GetInstance().AsyncBegin(_pSelf, _pOther, "dummy");
 			GetInstance().AsyncOption(_pSelf, _pOther, "temprloc", TLPath.string().c_str());
+		}
+
+		if (filesystem::exists(texdir / "Sprites"))
+		{
+			// Loop entre todos los elementos de la carpeta y subcarpetas
+			for (auto const& dir_entry : filesystem::recursive_directory_iterator{ texdir / "Sprites" })
+			{
+				// Obtener la informacion del elemento
+				filesystem::path entry_path = dir_entry.path();
+				filesystem::path entry_file = dir_entry.path().filename();
+				filesystem::path entry_extn = dir_entry.path().extension();
+
+				// Saltar al siguiente archivo en caso de que no sea un png valido
+				if (!dir_entry.is_regular_file()) continue;
+				if (!(entry_extn.compare(".png") == 0)) continue;
+
+				// Strings del nombre del archivo
+				std::string fname = entry_file.string();
+				std::string Strip = fname;
+
+				// Obtener el nombre absoluto del sprite
+				auto str_pos = fname.find_last_of("_");
+				if (str_pos == std::string::npos) continue;
+				fname.erase(str_pos);
+
+				// Obtener la cantidad de frames del nombre del archivo
+				str_pos = Strip.find_last_of("_");
+				if (str_pos == std::string::npos) continue;
+				Strip.erase(0, str_pos + 6);
+
+				// Eliminar el residuo
+				str_pos = Strip.find_last_of(".");
+				if (str_pos == std::string::npos) continue;
+				Strip.erase(str_pos);
+
+				// Obtener el index del sprite y la cantidad te frames en valor numerico
+				double sprite_index = GetInstance().GetAssetIndex(_pSelf, _pOther, fname.c_str());
+				double imgnumb = std::stoi(Strip);
+
+				// Si el index del sprite no es invalido se reemplazara el sprite
+				if (sprite_index != -1)
+				{
+					GetInstance().SpriteReplace(_pSelf, _pOther, sprite_index, entry_path.string().c_str(), imgnumb, 0, 0, GetInstance().GetSpriteXOrig(_pSelf, _pOther, sprite_index), GetInstance().GetSpriteYOrig(_pSelf, _pOther, sprite_index));
+				}
+			}
 		}
 
 		// Comprobar si existe la carpeta de Backgrounds
